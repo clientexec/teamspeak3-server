@@ -8,7 +8,11 @@ require_once 'modules/admin/models/ServerPlugin.php';
 */
 class PluginTeamspeak3 extends ServerPlugin
 {
-    public $usesPackageName = true;
+    public $features = array(
+        'packageName' => true,
+        'testConnection' => false,
+        'showNameservers' => false
+    );
     /*****************************************************************/
     // function getVariables - required function
     /*****************************************************************/
