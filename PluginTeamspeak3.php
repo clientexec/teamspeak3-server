@@ -26,50 +26,50 @@ class PluginTeamspeak3 extends ServerPlugin
 
 
         $variables = array (
-                   /*T*/"Name"/*/T*/ => array (
+                   lang("Name") => array (
                                         "type"          => "hidden",
                                         "description"   => "Used By CE to show plugin - must match how you call the action function names",
                                         "value"         => "Teamspeak 3"
                                        ),
-                   /*T*/"Description"/*/T*/ => array (
+                   lang("Description") => array (
                                         "type"          => "hidden",
-                                        "description"   => /*T*/"Description viewable by admin in server settings"/*/T*/,
-                                        "value"         => /*T*/"Teamspeak 3 voice server integration.  Note: The custom field settings are used to hold information about the clients server.  Please create these fields in admin->custom fields->packages first.  The package name on server fields for each package hold the slot count.  Suspending a server sets the slot count to 0."/*/T*/
+                                        "description"   => lang("Description viewable by admin in server settings"),
+                                        "value"         => lang("Teamspeak 3 voice server integration.  Note: The custom field settings are used to hold information about the clients server.  Please create these fields in admin->custom fields->packages first.  The package name on server fields for each package hold the slot count.  Suspending a server sets the slot count to 0.")
                                        ),
-                   /*T*/"Username"/*/T*/ => array (
+                   lang("Username") => array (
                                         "type"          => "text",
-                                        "description"   => /*T*/"Username used to connect to server"/*/T*/,
+                                        "description"   => lang("Username used to connect to server"),
                                         "value"         => ""
                                        ),
-                   /*T*/"Password"/*/T*/ => array (
+                   lang("Password") => array (
                                         "type"          => "password",
-                                        "description"   => /*T*/"Password used to connect to server"/*/T*/,
+                                        "description"   => lang("Password used to connect to server"),
                                         "value"         => "",
                                         "encryptable"   => true
                                        ),
-                   /*T*/"Starting Teamspeak Port Number"/*/T*/ => array(
+                   lang("Starting Teamspeak Port Number") => array(
                                         "type"          => "text",
-                                        "description"   => /*T*/"Enter the starting teamspeak port number you'd like to use.  If the port is already in use it will use the next available port."/*/T*/,
+                                        "description"   => lang("Enter the starting teamspeak port number you'd like to use.  If the port is already in use it will use the next available port."),
                                         "value"         => "8767"
                                         ),
-                   /*T*/"Client Port Custom Field"/*/T*/ => array(
+                   lang("Client Port Custom Field") => array(
                                         "type"          => "text",
-                                        "description"   => /*T*/"Enter the name of the package custom field that will hold the client teamspeak port number."/*/T*/,
+                                        "description"   => lang("Enter the name of the package custom field that will hold the client teamspeak port number."),
                                         "value"         => ""
                                         ),
-                   /*T*/"Admin Token Custom Field"/*/T*/ => array(
+                   lang("Admin Token Custom Field") => array(
                                         "type"          => "text",
-                                        "description"   => /*T*/"Enter the name of the package custom field that will hold the client teamspeak admin token."/*/T*/,
+                                        "description"   => lang("Enter the name of the package custom field that will hold the client teamspeak admin token."),
                                         "value"         => ""
                                         ),
-                   /*T*/"Default Server Name"/*/T*/ => array(
+                   lang("Default Server Name") => array(
                                         "type"          => "text",
-                                        "description"   => /*T*/"Enter the default name that the server should be created with."/*/T*/,
+                                        "description"   => lang("Enter the default name that the server should be created with."),
                                         "value"         => "Teamspeak 3 Server"
                                         ),
-                   /*T*/"Actions"/*/T*/ => array (
+                   lang("Actions") => array (
                                         "type"          => "hidden",
-                                        "description"   => /*T*/"Current actions that are active for this plugin per server"/*/T*/,
+                                        "description"   => lang("Current actions that are active for this plugin per server"),
                                         "value"         => "Create,Delete,Suspend,UnSuspend"
                                        )
         );
