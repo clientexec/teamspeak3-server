@@ -88,7 +88,7 @@ class PluginTeamspeak3 extends ServerPlugin
     	$servername = $args['server']['variables']['plugin_teamspeak3_Default_Server_Name'];
     	if ($servername == '') $servername = 'Teamspeak 3 Server';
 
-    	$package = new UserPackage($args['package']['id'], $this->user);
+    	$package = new UserPackage($args['package']['id'], array(), $this->user);
     	$port = "";
     	$clientpass = "";
     	$port = $package->getCustomField($args['server']['variables']['plugin_teamspeak3_Client_Port_Custom_Field'], CUSTOM_FIELDS_FOR_PACKAGE);
@@ -145,7 +145,7 @@ class PluginTeamspeak3 extends ServerPlugin
                 $args['server']['variables']['plugin_teamspeak3_Admin_Token_Custom_Field'] == ""
            ) throw new CE_Exception ("Team Speak plugin not setup properly");
 
-    	$package = new UserPackage($args['package']['id'], $this->user);
+    	$package = new UserPackage($args['package']['id'], array(), $this->user);
 
     	$port = "";
     	$port = $package->getCustomField($args['server']['variables']['plugin_teamspeak3_Client_Port_Custom_Field'], CUSTOM_FIELDS_FOR_PACKAGE);
@@ -175,7 +175,7 @@ class PluginTeamspeak3 extends ServerPlugin
            ) throw new CE_Exception ("Team Speak plugin not setup properly");
 
     	$slotcount = $args['package']['name_on_server'];
-    	$package = new UserPackage($args['package']['id'], $this->user);
+    	$package = new UserPackage($args['package']['id'], array(), $this->user);
 
     	$port = "";
     	$port = $package->getCustomField($args['server']['variables']['plugin_teamspeak3_Client_Port_Custom_Field'], CUSTOM_FIELDS_FOR_PACKAGE);
@@ -204,7 +204,7 @@ class PluginTeamspeak3 extends ServerPlugin
                 $args['server']['variables']['plugin_teamspeak3_Admin_Token_Custom_Field'] == ""
            ) throw new CE_Exception ("Team Speak plugin not setup properly");
 
-    	$package = new UserPackage($args['package']['id'], $this->user);
+    	$package = new UserPackage($args['package']['id'], array(), $this->user);
 
     	$port = "";
     	$port = $package->getCustomField($args['server']['variables']['plugin_teamspeak3_Client_Port_Custom_Field'], CUSTOM_FIELDS_FOR_PACKAGE);
@@ -230,7 +230,7 @@ class PluginTeamspeak3 extends ServerPlugin
                 $args['server']['variables']['plugin_teamspeak3_Admin_Token_Custom_Field'] == ""
            ) throw new CE_Exception ("Team Speak plugin not setup properly");
 
-    	$package = new UserPackage($args['package']['id'], $this->user);
+    	$package = new UserPackage($args['package']['id'], array(), $this->user);
     	$port = "";
     	$port = $package->getCustomField($args['server']['variables']['plugin_teamspeak3_Client_Port_Custom_Field'], CUSTOM_FIELDS_FOR_PACKAGE);
     	if ($port == "") return;
