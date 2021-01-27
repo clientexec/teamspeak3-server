@@ -52,7 +52,7 @@ class Teamspeak3Server
      * @param String $password The superadmin password
      * @return TeamspeakServer
      */
-    function Teamspeak3Server($host, $user, $password)
+    function __construct($host, $user, $password)
     {
         $this->host = $host;
         $this->user = $this->escapeChars($user);
@@ -66,25 +66,23 @@ class Teamspeak3Server
     function connect()
     {
         // Connect to the server and check that it was successful
-    	$this->connection = @fsockopen($this->host, $this->port);
-    	if (!$this->connection) {
-    	    return new CE_Error('ERROR: Cannot connect to server: '.$this->host.':'.$this->port, 90);
-    	}
-    	$return = fgets($this->connection, 10);
-    	if (strpos($return, "TS3") === false)
-    	{
-    		fclose($this->connection);
-    		return new CE_Error('ERROR: Cannot connect to server('.$return.')', 90);
-    	}
+        $this->connection = @fsockopen($this->host, $this->port);
+        if (!$this->connection) {
+            return new CE_Error('ERROR: Cannot connect to server: '.$this->host.':'.$this->port, 90);
+        }
+        $return = fgets($this->connection, 10);
+        if (strpos($return, "TS3") === false) {
+            fclose($this->connection);
+            return new CE_Error('ERROR: Cannot connect to server('.$return.')', 90);
+        }
 
-    	// Login to the server and check that it was successful
-    	$return = $this->callCommand("login $this->user $this->password");
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    		fclose($this->connection);
-    		return new CE_Error('ERROR: Invalid Username or Password.', 90);
-    	}
-    	return true;
+        // Login to the server and check that it was successful
+        $return = $this->callCommand("login $this->user $this->password");
+        if (strpos($return, "msg=ok") === false) {
+            fclose($this->connection);
+            return new CE_Error('ERROR: Invalid Username or Password.', 90);
+        }
+        return true;
     }
 
     function disconect()
@@ -106,21 +104,23 @@ class Teamspeak3Server
                 if (strpos($line, "msg=") !== false && strpos($line, "error id=") !== false) {
                     // parse the error id
                     $matches = array();
-                	if (preg_match("/error id=(.+) .*/", $line, $matches) && isset($matches[1]))
-                	    $this->lastErrorId = $matches[1];
-                	else
-                	   $this->lastErrorId = "Failed to parse error id";
+                    if (preg_match("/error id=(.+) .*/", $line, $matches) && isset($matches[1])) {
+                        $this->lastErrorId = $matches[1];
+                    } else {
+                        $this->lastErrorId = "Failed to parse error id";
+                    }
 
                     // parse the message
-                	$matches = array();
-                	if (preg_match("/.* msg=(.+).*/", $line, $matches) && isset($matches[1]))
-                	    $this->lastErrorMsg = $this->unescapeChars(trim($matches[1]));
-                	else
-                	   $this->lastErrorMsg = "Failed to parse message";
+                    $matches = array();
+                    if (preg_match("/.* msg=(.+).*/", $line, $matches) && isset($matches[1])) {
+                        $this->lastErrorMsg = $this->unescapeChars(trim($matches[1]));
+                    } else {
+                        $this->lastErrorMsg = "Failed to parse message";
+                    }
                     break;
-                }
-                else
+                } else {
                     $line = "";
+                }
             }
         }
         return $result;
@@ -129,9 +129,12 @@ class Teamspeak3Server
     /**
      * Private function for flushing unused output from the teamspeak telnet server
      */
-    function _flush_output() { }
+    function _flush_output()
+    {
+    }
 
-    function escapeChars($text) {
+    function escapeChars($text)
+    {
         $result = "";
         for ($i = 0; $i < strlen($text); $i++) {
             $val = ord($text[$i]);
@@ -144,7 +147,8 @@ class Teamspeak3Server
         return $result;
     }
 
-    function unescapeChars($text) {
+    function unescapeChars($text)
+    {
         $result = "";
         for ($i = 0; $i < strlen($text); $i++) {
             if ($text[$i] == "\\" && isset($text[$i + 1]) && isset($this->unescapeCharsArr[$text[$i] . $text[$i + 1]])) {
@@ -157,7 +161,8 @@ class Teamspeak3Server
         return $result;
     }
 
-    function formatLastError() {
+    function formatLastError()
+    {
         return " Error ID: " . $this->lastErrorId . " ( " . $this->lastErrorMsg . ")";
     }
 
@@ -171,8 +176,8 @@ class Teamspeak3Server
      * @param Integer $maxusers
      * @return An CE_Error object with the status message.
      */
-    function add($port, $name, $maxusers) {
-
+    function add($port, $name, $maxusers)
+    {
         // escape the name
         $name = $this->escapeChars($name);
 
@@ -182,72 +187,60 @@ class Teamspeak3Server
                     .' virtualserver_maxclients='.$maxusers;
 
         // Add the server and check for success
-    	$return = $this->callCommand($command);
+        $return = $this->callCommand($command);
 
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    	    return new CE_Error('Error: Encountered an error while adding the server. ' . $this->formatLastError(), 90);
-    	}
+        if (strpos($return, "msg=ok") === false) {
+            return new CE_Error('Error: Encountered an error while adding the server. ' . $this->formatLastError(), 90);
+        }
 
-    	// Get the serverid
-    	$matches = array();
-    	$serverid = -1;
-    	if (preg_match("/sid=(\d+)/", $return, $matches) && isset($matches[1])) {
-    	    $serverid = $matches[1];
-    	} else {
-    	    return new CE_Error('Error: No server id returned in server create result. ' . $this->formatLastError(), 90);
-    	}
+        // Get the serverid
+        $matches = array();
+        $serverid = -1;
+        if (preg_match("/sid=(\d+)/", $return, $matches) && isset($matches[1])) {
+            $serverid = $matches[1];
+        } else {
+            return new CE_Error('Error: No server id returned in server create result. ' . $this->formatLastError(), 90);
+        }
 
-    	$token = '';
-    	if (preg_match("/token=(.+)( )/", $return, $matches) && isset($matches[1])) {
-    	    $token = $this->unescapeChars($matches[1]);
-    	} else {
-    	    return new CE_Error('Error: No administration token returned in server create result. ' . $this->formatLastError(), 90);
-    	}
+        $token = '';
+        if (preg_match("/token=(.+)( )/", $return, $matches) && isset($matches[1])) {
+            $token = $this->unescapeChars($matches[1]);
+        } else {
+            return new CE_Error('Error: No administration token returned in server create result. ' . $this->formatLastError(), 90);
+        }
 
-    	// Select the server
-    	$return = $this->callCommand("use $serverid");
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    	    return new CE_Error('Error: Encountered an error while selecting the server. ' . $this->formatLastError(), 90);
-    	}
+        // Select the server
+        $return = $this->callCommand("use $serverid");
+        if (strpos($return, "msg=ok") === false) {
+            return new CE_Error('Error: Encountered an error while selecting the server. ' . $this->formatLastError(), 90);
+        }
 
-    	// Set the server to autostart
-    	$return = $this->callCommand("serveredit virtualserver_autostart=1");
+        // Set the server to autostart
+        $return = $this->callCommand("serveredit virtualserver_autostart=1");
         if (strpos($return, "msg=ok") === false) {
             return new CE_Error("Error: Could not change the autostart option on the server. " . $this->formatLastError(), 90);
         }
 
-//         Deselect the server so it goes back to status=none
-//    	$return = $this->callCommand("use");
-//        if (strpos($return, "msg=ok") === false) {
-//            return new CE_Error("Error: Could not deselect the server. " . $this->formatLastError(), 90);
-//        }
-//
-//         Start the server
-//    	$return = $this->callCommand("serverstart sid=$serverid");
-//        if (strpos($return, "msg=ok") === false && $this->lastErrorId != 1025) {
-//            return new CE_Error("Error: Could not start the server. " . $this->formatLastError(), 90);
-//        }
-
-    	return array ($serverid, $token);
+        return array ($serverid, $token);
     }
 
-    function delete($port) {
+    function delete($port)
+    {
         // Get the Server ID
         $serverid = $this->getSidForPort($port);
-    	if (is_a($serverid, 'CE_Error')) return $serverid;
+        if (is_a($serverid, 'CE_Error')) {
+            return $serverid;
+        }
 
-    	$this->stop($serverid);
+        $this->stop($serverid);
 
-    	// Delete the server and check that it was succesful
-    	$return = $this->callCommand("serverdelete sid=$serverid");
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    	    return new CE_Error('Error: Deleting server ('.$serverid.') failed. ' . $this->formatLastError(), 90);
-    	}
+        // Delete the server and check that it was succesful
+        $return = $this->callCommand("serverdelete sid=$serverid");
+        if (strpos($return, "msg=ok") === false) {
+            return new CE_Error('Error: Deleting server ('.$serverid.') failed. ' . $this->formatLastError(), 90);
+        }
 
-    	return new CE_Error('Teamspeak Deletion successful', 90);
+        return new CE_Error('Teamspeak Deletion successful', 90);
     }
 
     /**
@@ -257,16 +250,18 @@ class Teamspeak3Server
      * @param Interger $maxusers
      * @return CE_Error object with the return message.
      */
-    function update($port, $maxusers) {
+    function update($port, $maxusers)
+    {
         $sid = $this->getSidForPort($port);
-        if (is_a($sid, 'CE_Error')) return $sid;
+        if (is_a($sid, 'CE_Error')) {
+            return $sid;
+        }
 
         // Select the server and check that it was successful
-    	$return = $this->callCommand("use sid=$sid");
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    	    return new CE_Error('ERROR: Could not select server with port ('.$port.').  It does not exist. ' . $this->formatLastError(), 90);
-    	}
+        $return = $this->callCommand("use sid=$sid");
+        if (strpos($return, "msg=ok") === false) {
+            return new CE_Error('ERROR: Could not select server with port ('.$port.').  It does not exist. ' . $this->formatLastError(), 90);
+        }
 
         // Change the slot count
         $return = $this->callCommand("serveredit virtualserver_maxclients=$maxusers");
@@ -279,14 +274,15 @@ class Teamspeak3Server
     function suspend($port)
     {
         $sid = $this->getSidForPort($port);
-        if (is_a($sid, 'CE_Error')) return $sid;
+        if (is_a($sid, 'CE_Error')) {
+            return $sid;
+        }
 
         // Select the server and check that it was successful
-    	$return = $this->callCommand("use sid=$sid");
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    	    return new CE_Error('ERROR: Could not select server with port ('.$port.').  It does not exist. ' . $this->formatLastError(), 90);
-    	}
+        $return = $this->callCommand("use sid=$sid");
+        if (strpos($return, "msg=ok") === false) {
+            return new CE_Error('ERROR: Could not select server with port ('.$port.').  It does not exist. ' . $this->formatLastError(), 90);
+        }
 
         // Change the autostart option
         $return = $this->callCommand("serveredit virtualserver_autostart=0");
@@ -302,16 +298,17 @@ class Teamspeak3Server
     function unsuspend($port)
     {
         $sid = $this->getSidForPort($port);
-        if (is_a($sid, 'CE_Error')) return $sid;
+        if (is_a($sid, 'CE_Error')) {
+            return $sid;
+        }
 
-		$this->start($sid);
+        $this->start($sid);
 
         // Select the server and check that it was successful
-    	$return = $this->callCommand("use sid=$sid");
-    	if (strpos($return, "msg=ok") === false)
-    	{
-    	    return new CE_Error('ERROR: Could not select server with port ('.$port.').  It does not exist. ' . $this->formatLastError(), 90);
-    	}
+        $return = $this->callCommand("use sid=$sid");
+        if (strpos($return, "msg=ok") === false) {
+            return new CE_Error('ERROR: Could not select server with port ('.$port.').  It does not exist. ' . $this->formatLastError(), 90);
+        }
 
         // Change the autostart option which restarts the server
         $return = $this->callCommand("serveredit virtualserver_autostart=1");
@@ -362,44 +359,56 @@ class Teamspeak3Server
      */
     function checkPortAvailability($requestedPort)
     {
-    	$return = $this->callCommand("serveridgetbyport virtualserver_port=$requestedPort");
-    	if (strpos($return, "msg=ok") !== false)
-    	{
-    	   return false;
-    	}
-    	return true;
+        $return = $this->callCommand("serveridgetbyport virtualserver_port=$requestedPort");
+        if (strpos($return, "msg=ok") !== false) {
+            return false;
+        }
+        return true;
     }
 
     function getSidForPort($port)
     {
-    	$return = $this->callCommand("serveridgetbyport virtualserver_port=$port");
-    	// Get the serverid
-    	$matches = array();
-    	$serverid = -1;
-    	if (preg_match("/server_id=(\d+)/", $return, $matches) && isset($matches[1])) {
-    	    return trim($matches[1]);
-    	} else {
-    	    return new CE_Error('Error: No server id returned in server create result. ' . $this->formatLastError(), 90);
-    	}
+        $return = $this->callCommand("serveridgetbyport virtualserver_port=$port");
+        // Get the serverid
+        $matches = array();
+        $serverid = -1;
+        if (preg_match("/server_id=(\d+)/", $return, $matches) && isset($matches[1])) {
+            return trim($matches[1]);
+        } else {
+            return new CE_Error('Error: No server id returned in server create result. ' . $this->formatLastError(), 90);
+        }
     }
 
     function getServerStatus($serverid)
     {
-
         $return = $this->callCommand("use $serverid");
-        if (strpos($return, "msg=ok") === false)
-    	{
-    	    return '';
-    	}
+        if (strpos($return, "msg=ok") === false) {
+            return '';
+        }
 
-    	$return = $this->callCommand("serverinfo");
-    	if (preg_match("/.* virtualserver_status=([a-z]+) .*/", $return, $matches) && isset($matches[1])) {
-    	    return trim($matches[1]);
-    	} else {
-    	    return '';
-    	}
+        $return = $this->callCommand("serverinfo");
+        if (preg_match("/.* virtualserver_status=([a-z]+) .*/", $return, $matches) && isset($matches[1])) {
+            return trim($matches[1]);
+        } else {
+            return '';
+        }
 
-    	$this->callCommand("use");
+        $this->callCommand("use");
+    }
+
+    function getAutoStart($serverid)
+    {
+        $return = $this->callCommand("use $serverid");
+        if (strpos($return, "msg=ok") === false) {
+            return '';
+        }
+
+        $return = $this->callCommand("serverinfo");
+        if (preg_match("/.* virtualserver_autostart=(\d+)/", $return, $matches) && isset($matches[1])) {
+            return trim($matches[1]);
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -411,10 +420,10 @@ class Teamspeak3Server
     {
         $return = $this->callCommand("serverlist");
         $matches = array();
-        if (preg_match_all("/virtualserver_port=(\d+)/", $return, $matches) && isset($matches[1]))
+        if (preg_match_all("/virtualserver_port=(\d+)/", $return, $matches) && isset($matches[1])) {
             return $matches[1];
-        else
+        } else {
             return array();
+        }
     }
 }
-?>
